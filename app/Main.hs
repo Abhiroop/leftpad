@@ -55,6 +55,13 @@ example =
     Just s -> leftPad '!' (Proxy @5) (Proxy @3) s
     Nothing -> error "Vector creation failed!"
 
+example2 =
+  case V.fromList "foo" of
+    Just s -> leftPad '!' (Proxy @0) (Proxy @3) s
+    Nothing -> error "Vector creation failed!"
+
 
 main :: IO ()
-main = putStrLn $ show example
+main = do
+  putStrLn $ show example
+  putStrLn $ show example2
