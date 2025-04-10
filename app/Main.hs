@@ -9,7 +9,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Main where
 
-import Data.Maybe (fromMaybe)
+import Data.Maybe (fromJust)
 import Data.Proxy (Proxy(..))
 import GHC.TypeLits (Nat, type (<=?), KnownNat)
 import Data.Type.Bool (If)
@@ -51,17 +51,16 @@ leftPad c pPad str = (padString pPad (proxyN str) c) V.++ str
     proxyN :: KnownNat n => V.Vector n a -> Proxy n
     proxyN _ = Proxy
 
-example =
-  case (V.fromList "foo" :: Maybe (V.Vector 3 Char)) of
-    Just s -> leftPad '!' (Proxy @5) s
-    Nothing -> error "Vector creation failed!"
+example = leftPad '!' (Proxy @5) getStr
+  where
+    myStr  = V.fromList "foo" :: Maybe (V.Vector 3 Char)
+    getStr = fromJust myStr
 
-example2 =
-  case (V.fromList "foo" :: Maybe (V.Vector 3 Char)) of
-    Just s -> leftPad '!' (Proxy @0) s
-    Nothing -> error "Vector creation failed!"
+example2 = leftPad '!' (Proxy @0) getStr
+  where
+    myStr  = V.fromList "foo" :: Maybe (V.Vector 3 Char)
+    getStr = fromJust myStr
 
-main :: IO ()
 main = do
   putStrLn $ show example
   putStrLn $ show example2
