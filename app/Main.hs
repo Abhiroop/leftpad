@@ -44,22 +44,22 @@ leftPad :: forall (pad :: Nat) (n :: Nat).
            (KnownNat pad, KnownNat n, KnownNat (PadK pad n), PadKMaxEqual pad n)
          => Char                           -- Padding character
          -> Proxy pad                      -- Length with padding
-         -> Proxy n                        -- Raw length
          -> V.Vector n Char                -- The original vector (length n)
          -> V.Vector (Max pad n) Char      -- Result: padded to max(n, pad)
-leftPad c pPad pN str = (padString pPad pN c) V.++ str
-
+leftPad c pPad str = (padString pPad (proxyN str) c) V.++ str
+  where
+    proxyN :: KnownNat n => V.Vector n a -> Proxy n
+    proxyN _ = Proxy
 
 example =
-  case V.fromList "foo" of
-    Just s -> leftPad '!' (Proxy @5) (Proxy @3) s
+  case (V.fromList "foo" :: Maybe (V.Vector 3 Char)) of
+    Just s -> leftPad '!' (Proxy @5) s
     Nothing -> error "Vector creation failed!"
 
 example2 =
-  case V.fromList "foo" of
-    Just s -> leftPad '!' (Proxy @0) (Proxy @3) s
+  case (V.fromList "foo" :: Maybe (V.Vector 3 Char)) of
+    Just s -> leftPad '!' (Proxy @0) s
     Nothing -> error "Vector creation failed!"
-
 
 main :: IO ()
 main = do
